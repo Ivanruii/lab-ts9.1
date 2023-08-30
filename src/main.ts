@@ -109,15 +109,11 @@ const calcularDesgloseIva = (lineasCalculadas: ResultadoLineaTicket[]): TotalPor
     return desgloseIva;
 };
 
-const calculaTicket = (lineasTicket: LineaTicket[]): {
-    lineas: ResultadoLineaTicket[];
-    total: ResultadoTotalTicket;
-    desgloseIva: TotalPorTipoIva[];
-} => {
+const calculoLineas = (lineasTicket: LineaTicket[]): ResultadoLineaTicket[] => {
     const lineasCalculadas = lineasTicket.map((linea) => {
         const { producto, cantidad } = linea;
         const { precio, tipoIva } = producto;
-        
+
         let tipoIvaValue = 0;
         switch (tipoIva) {
             case "general":
@@ -145,12 +141,21 @@ const calculaTicket = (lineasTicket: LineaTicket[]): {
             precioConIva,
         };
     });
+    
+    return lineasCalculadas;
+}
 
-    const resultadoTotal = calcularTotales(lineasCalculadas);
-    const desgloseIva = calcularDesgloseIva(lineasCalculadas);
+const calculaTicket = (lineasTicket: LineaTicket[]): {
+    lineas: ResultadoLineaTicket[];
+    total: ResultadoTotalTicket;
+    desgloseIva: TotalPorTipoIva[];
+} => {
+
+    const resultadoTotal = calcularTotales(calculoLineas(lineasTicket));
+    const desgloseIva = calcularDesgloseIva(calculoLineas(lineasTicket));
 
     return {
-        lineas: lineasCalculadas,
+        lineas: calculoLineas(lineasTicket),
         total: resultadoTotal,
         desgloseIva,
     };
